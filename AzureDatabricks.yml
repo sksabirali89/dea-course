@@ -1,0 +1,93 @@
+name: CPM EDP Azure Databricks
+
+on:
+  push:
+    branches:
+    - main
+    - UAT
+    - dev
+
+jobs:
+  Build:
+    name: Build Job
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2.4.2
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        path: ${{ github.workspace }}/notebooks/Shared/CPM_DATABRICKS_JOBS
+        name: drop
+
+  DeployDEV:
+    needs: [Build]
+    name: DEV Deployment
+    runs-on: ubuntu-latest
+    environment: DEV
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+
+    if: (github.ref ==  'refs/heads/dev')
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: install-databricks-cli
+        uses: microsoft/install-databricks-cli@v1.0.0
+
+      - name: Import Databricks notebooks
+        uses: microsoft/databricks-import-notebook@v1.0.0
+        with:
+          databricks-host: ${{ env.DATABRICKS_HOST }}
+          databricks-token: ${{ env.DATABRICKS_TOKEN }}
+          local-path: ./CPM_DATABRICKS_JOBS
+          remote-path: /Shared/CPM_DATABRICKS_JOBS
+
+  DeployUAT:
+      needs: [Build]
+      name: UAT Deployment
+      runs-on: ubuntu-latest
+      environment: UAT
+      env:
+        DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+        DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+  
+      if: (github.ref ==  'refs/heads/UAT')
+      steps:
+        - uses: actions/checkout@v2
+  
+        - name: install-databricks-cli
+          uses: microsoft/install-databricks-cli@v1.0.0
+  
+        - name: Import Databricks notebooks
+          uses: microsoft/databricks-import-notebook@v1.0.0
+          with:
+            databricks-host: ${{ env.DATABRICKS_HOST }}
+            databricks-token: ${{ env.DATABRICKS_TOKEN }}
+            local-path: ./CPM_DATABRICKS_JOBS
+            remote-path: /Shared/CPM_DATABRICKS_JOBS
+  
+  DeployPROD:
+    needs: [Build]
+    name: PROD Deployment
+    runs-on: ubuntu-latest
+    environment: PROD
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+
+    if: (github.ref ==  'refs/heads/main')
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: install-databricks-cli
+        uses: microsoft/install-databricks-cli@v1.0.0
+
+      - name: Import Databricks notebooks
+        uses: microsoft/databricks-import-notebook@v1.0.0
+        with:
+          databricks-host: ${{ env.DATABRICKS_HOST }}
+          databricks-token: ${{ env.DATABRICKS_TOKEN }}
+          local-path: ./CPM_DATABRICKS_JOBS
+          remote-path: /Shared/CPM_DATABRICKS_JOBS
