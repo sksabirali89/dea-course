@@ -1,0 +1,56 @@
+name: DEA Courses Notebooks CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+
+jobs:
+  DeployDEV:
+    name: DEV Deployment
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/dev'
+    environment: DEV
+
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Databricks CLI
+        uses: microsoft/install-databricks-cli@v1.0.0
+
+      - name: Import Notebooks
+        uses: microsoft/databricks-import-notebook@v1.0.0
+        with:
+          databricks-host: ${{ env.DATABRICKS_HOST }}
+          databricks-token: ${{ env.DATABRICKS_TOKEN }}
+          local-path: ./notebooks
+          remote-path: /Shared/dea-course
+
+  DeployPROD:
+    name: PROD Deployment
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    environment: PROD
+
+    env:
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Databricks CLI
+        uses: microsoft/install-databricks-cli@v1.0.0
+
+      - name: Import Notebooks
+        uses: microsoft/databricks-import-notebook@v1.0.0
+        with:
+          databricks-host: ${{ env.DATABRICKS_HOST }}
+          databricks-token: ${{ env.DATABRICKS_TOKEN }}
+          local-path: ./notebooks
+          remote-path: /Shared/dea-course
