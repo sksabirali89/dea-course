@@ -27,8 +27,8 @@ jobs:
       - name: Import Notebooks
         uses: microsoft/databricks-import-notebook@v1.0.0
         with:
-          databricks-host: ${{ env.DEV_DATABRICKS_HOST }}
-          databricks-token: ${{ env.DEV_DATABRICKS_TOKEN }}
+          databricks-host: ${{ env.DATABRICKS_HOST }}
+          databricks-token: ${{ env.DATABRICKS_TOKEN }}
           local-path: ./notebooks
           remote-path: /Shared/dea-course
 
