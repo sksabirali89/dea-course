@@ -14,20 +14,21 @@ jobs:
     environment: DEV
 
     env:
-      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+      DATABRICKS_HOST: ${{ secrets.DEV_DATABRICKS_HOST }}
+      DATABRICKS_TOKEN: ${{ secrets.DEV_DATABRICKS_TOKEN }}
 
     steps:
+      # Downloads your repo into the runner, so your job can access it
       - uses: actions/checkout@v4
-
+      # Installs CLI to interact with Databricks
       - name: Install Databricks CLI
         uses: microsoft/install-databricks-cli@v1.0.0
-
+      # GitHub → Databricks workspace sync
       - name: Import Notebooks
         uses: microsoft/databricks-import-notebook@v1.0.0
         with:
-          databricks-host: ${{ env.DATABRICKS_HOST }}
-          databricks-token: ${{ env.DATABRICKS_TOKEN }}
+          databricks-host: ${{ env.DEV_DATABRICKS_HOST }}
+          databricks-token: ${{ env.DEV_DATABRICKS_TOKEN }}
           local-path: ./notebooks
           remote-path: /Shared/dea-course
 
@@ -38,8 +39,8 @@ jobs:
     environment: PROD
 
     env:
-      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-      DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+      DATABRICKS_HOST: ${{ secrets.PROD_DATABRICKS_HOST }}
+      DATABRICKS_TOKEN: ${{ secrets.PROD_DATABRICKS_TOKEN }}
 
     steps:
       - uses: actions/checkout@v4
@@ -50,7 +51,7 @@ jobs:
       - name: Import Notebooks
         uses: microsoft/databricks-import-notebook@v1.0.0
         with:
-          databricks-host: ${{ env.DATABRICKS_HOST }}
-          databricks-token: ${{ env.DATABRICKS_TOKEN }}
+          databricks-host: ${{ env.PROD_DATABRICKS_HOST }}
+          databricks-token: ${{ env.PROD_DATABRICKS_TOKEN }}
           local-path: ./notebooks
           remote-path: /Shared/dea-course
